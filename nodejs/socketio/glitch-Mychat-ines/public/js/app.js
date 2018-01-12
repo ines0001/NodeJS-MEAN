@@ -1,0 +1,1 @@
+angular.module('ngChat',['ngChat.services','ngChat.controllers']);
