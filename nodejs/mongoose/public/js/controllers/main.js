@@ -8,12 +8,18 @@ angular.module('todoController', [])
 		// GET =====================================================================
 		// when landing on the page, get all todos and show them
 		// use the service to get all the todos
+		
+		// UPDATE angular 1.6.0
+		// $http:
+		//remove deprecated callback methods: success()/error() (b54a39)
+		//JSONP callback must be specified by jsonpCallbackParam config (fb6634, #15161, #11352)
+		//JSONP requests now require a trusted resource URL (6476af, #11352)
+		
 		Todos.get()
-			.success(function(data) {
-				$scope.todos = data;
-				$scope.loading = false;
-      c
-			}).error(function(err){console.log('error:'+err);});
+			.then(function(response) {
+				$scope.todos = response.data;
+        			$scope.loading = false;
+			},function(err){console.log('error:'+err);});
 
 		// CREATE ==================================================================
 		// when submitting the add form, send the text to the node API
@@ -28,10 +34,10 @@ angular.module('todoController', [])
 				Todos.create($scope.formData)
 
 					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
+					.then(function(response) {
 						$scope.loading = false;
 						$scope.formData = {}; // clear the form so our user is ready to enter another
-						$scope.todos = data; // assign our new list of todos
+						$scope.todos = response.data; // assign our new list of todos
 					});
 			}
 		};
@@ -43,9 +49,9 @@ angular.module('todoController', [])
 
 			Todos.delete(id)
 				// if successful creation, call our get function to get all the new todos
-				.success(function(data) {
+				.then(function(response) {
 					$scope.loading = false;
-					$scope.todos = data; // assign our new list of todos
+					$scope.todos = response.data; // assign our new list of todos
 				});
 		};
 	}]);
