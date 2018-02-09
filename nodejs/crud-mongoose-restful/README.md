@@ -1,20 +1,27 @@
-Testing via Postman
-Now that everything is now connected, let’s test each of the routes and the respective methods.
+Welcome to the Glitch BETA
+=========================
 
-Open your postman and type:
+Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
 
-http://localhost:3000/tasks in the enter request URL section and press enter.
-Screen Shot 2017-03-03 at 8.15.35 PM.png
-On enter, you should see “[]” because there is nothing in the database yet.
-On the same address, change the method to POST, click body and select “x-www-form-urlencoded”.
-Then, enter name as the key and the corresponding task name as value.
-After this, click on send button.
-This should give you a response 200 ok
-Screen Shot 2017-03-03 at 8.12.55 PM.png
+**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
 
-Adding a middleware
-Having done all these, what happens if we entered a wrong route? say you entered 'http://localhost:3000/task', It responds with a message “Cannot GET /task”. Let’s add express middleware which could be used to return more interactive messages.
+Find out more [about Glitch](https://glitch.com/about).
 
-Middlewares basically intercepts incoming http request and as such you can use them to perform several operations ranging from authentication to validations etc.
 
-To do this, open your server.js file and paste the code snippet into it.
+Your Project
+------------
+
+On the front-end,
+- edit `public/client.js`, `public/style.css` and `views/index.html`
+- drag in `assets`, like images or music, to add them to your project
+
+On the back-end,
+- your app starts at `server.js`
+- add frameworks and packages in `package.json`
+- safely store app secrets in `.env` (nobody can see this but you and people you invite)
+
+
+Made by [Fog Creek](https://fogcreek.com/)
+-------------------
+
+\ ゜o゜)ノ
