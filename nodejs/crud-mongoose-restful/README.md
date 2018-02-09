@@ -1,20 +1,103 @@
-Testing via Postman
-Now that everything is now connected, let’s test each of the routes and the respective methods.
+# mongoose-express-router
 
-Open your postman and type:
+[![Build Status](https://img.shields.io/travis/alexmingoia/mongoose-express-router.svg?style=flat)](http://travis-ci.org/alexmingoia/mongoose-express-router) [![Code Coverage](https://img.shields.io/coveralls/alexmingoia/mongoose-express-router.svg?style=flat)](https://coveralls.io/alexmingoia/mongoose-express-router) [![NPM version](https://img.shields.io/npm/v/mongoose-express-router.svg?style=flat)](http://badge.fury.io/js/mongoose-express-router)
 
-http://localhost:3000/tasks in the enter request URL section and press enter.
-Screen Shot 2017-03-03 at 8.15.35 PM.png
-On enter, you should see “[]” because there is nothing in the database yet.
-On the same address, change the method to POST, click body and select “x-www-form-urlencoded”.
-Then, enter name as the key and the corresponding task name as value.
-After this, click on send button.
-This should give you a response 200 ok
-Screen Shot 2017-03-03 at 8.12.55 PM.png
+> Create Express 4 router and middleware from Mongoose 4 model.
 
-Adding a middleware
-Having done all these, what happens if we entered a wrong route? say you entered 'http://localhost:3000/task', It responds with a message “Cannot GET /task”. Let’s add express middleware which could be used to return more interactive messages.
+## Usage
 
-Middlewares basically intercepts incoming http request and as such you can use them to perform several operations ranging from authentication to validations etc.
+```javascript
+var express = require('express');
+var mongoose = require('mongoose');
+var router = require('mongoose-express-router');
 
-To do this, open your server.js file and paste the code snippet into it.
+var db = mongoose.createConnection('mongodb://localhost/test');
+var schema = mongoose.Schema({ name: 'string' }).plugin(router);
+var User = mongoose.model('User', schema);
+
+var app = express();
+app.use('/users', User.router());
+
+app.listen(3000);
+```
+
+You can also use router middleware individually:
+
+```javascript
+app
+  .get('/users', User.router('find'))
+  .post('/users', User.router('create'))
+  .get('/users/:id', User.router('findOne'))
+  .patch('/users/:id', User.router('update'))
+  .delete('/users/:id', User.router('delete'));
+```
+
+### Queries
+
+The following query parameters are recognized:
+
+- `skip` or `offset`
+- `limit`
+- `sort`
+- `select`
+- `populate`
+- `match`
+
+### Session handling
+
+It's often useful to have the session available in mongoose middleware to do
+things like validation and authorization.
+
+#### Accessing the session from query or model middleware
+
+```javascript
+User.pre('find', function (next) {
+  console.log(this.session);
+  next();
+});
+```
+
+```javascript
+User.pre('save', function (next) {
+  console.log(this.session);
+  next();
+});
+```
+
+#### Setting the session
+
+The session is set whenever the router middleware is used, otherwise set the
+`session` query option.
+
+```javascript
+User.findOne()
+  .setOptions({ session: req.session })
+  .exec(function (err, user) {
+    console.log(user.session === req.session);
+    // => true
+  });
+```
+
+### Body parsing
+
+You must provide your own body parsing middleware. A `req.body` object must be
+available for the post/create middleware to work.
+
+### Custom middleware
+
+Custom middleware can be accessed using `Model.router()` and has the model
+exposed via `req.Model`:
+
+```javascript
+schema.plugin(router, {
+  middleware: {
+    myMiddleware: function (req, res, next) {
+      console.log(req.Model);
+      next();
+    }
+  }
+});
+
+// Returns middleware
+User.router('myMiddleware');
+```
